@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>Portfolio List</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600&display=swap');
+
+    :root {
+      --bg-color: #fafafa;
+      --text-color: #222;
+      --accent-color: #0078ff;
+      --card-bg: #fff;
+      --card-border: #eaeaea;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-weight: 600;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      letter-spacing: -0.5px;
+    }
+
+    ul {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 20px;
+      list-style: none;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    li a {
+      display: block;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text-color);
+      text-align: center;
+      padding: 40px 10px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+
+    li a:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    /* 다크모드 대응 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #1e1e1e;
+        --text-color: #f0f0f0;
+        --card-bg: #2a2a2a;
+        --card-border: #444;
+        --accent-color: #4da3ff;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>My Students's Portfolios</h1>
+  <ul>
+    <li><a href="https://ye-ji-bom.github.io/test-page/01/" target="_blank">학생 포트폴리오 01</a></li>
+    <li><a href="https://ye-ji-bom.github.io/test-page/02/" target="_blank">학생 포트폴리오 02</a></li>
+    <li><a href="#" target="_blank">학생 포트폴리오 03</a></li>
+    <li><a href="#" target="_blank">학생 포트폴리오 04</a></li>
+  </ul>
+</body>
+</html>
