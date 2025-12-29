@@ -194,7 +194,7 @@ section { scroll-margin-top: 30px; }
 .btn-primary { background: var(--accent); color: #fff; border: 0; box-shadow: 0 6px 18px rgba(106, 0, 255, 0.12); }
 .btn-ghost { background: transparent; color: var(--text); border: 1px solid rgba(255, 255, 255, 0.06); }
 .btn-sm {
-  padding: 8px 10px; border-radius: 8px; background: transparent;
+  padding: 8px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(100, 100, 100, 0.2); color: var(--text);
   font-size: 14px; transition: transform .18s; cursor: pointer;
 }
