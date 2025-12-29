@@ -169,7 +169,7 @@ window.addEventListener('load', changeNav);
 
 
 const images = [
-  'https://ye-ji-bom.github.io/portfolio-edu/img/main-bg.jpg'
+  'https://ye-ji-bom.github.io/portfolio-edu/img/main-bg.jpg',
   'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&q=80&w=2670',
   'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=2000',
   'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=2000',
