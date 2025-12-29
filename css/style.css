@@ -678,7 +678,7 @@ body {
     transition: 0.3s;
 }
 .btn-primary:hover {
-    background: #0b2416;
+    background: #58595b;
     transform: scale(1.03);
     box-shadow: 0 12px 28px rgba(244, 63, 94, 0.35);
 }
