@@ -620,7 +620,7 @@ body {
   border-bottom: 1px solid rgba(16, 185, 129, 0.1);
 }
 .brand { font-weight: 900; color: #10b981; }
-.nav-links a:hover, .nav-links a.active { color: #f43f5e; }
+.nav-links a:hover, .nav-links a.active { color: #00a651; }
 @media (max-width: 980px) {
   .nav-links {
     position: fixed;
