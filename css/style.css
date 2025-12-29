@@ -668,7 +668,7 @@ body {
 
 /* --- 6. Buttons --- */
 .btn-primary {
-    background: #f43f5e;
+    background: #00a651;
     color: #fff;
     border-radius: 14px;
     font-weight: 700;
@@ -678,7 +678,7 @@ body {
     transition: 0.3s;
 }
 .btn-primary:hover {
-    background: #e11d48;
+    background: #0b2416;
     transform: scale(1.03);
     box-shadow: 0 12px 28px rgba(244, 63, 94, 0.35);
 }
@@ -694,4 +694,4 @@ body {
 }
 
 
-.title-logo{color: #f43f5e;}
+.title-logo{color: #58595b;}
