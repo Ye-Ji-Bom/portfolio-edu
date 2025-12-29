@@ -27,7 +27,7 @@ body {
 ul { list-style-type: none; }
 a { text-decoration: none; color: inherit; }
 
-section { scroll-margin-top: 30px; }
+section { scroll-margin-top: 30px; margin-left: 10px; margin-right: 10px; }
 
 /* --- Modal Popup Style (Animation Ver.) --- */
 .modal-overlay {
@@ -169,7 +169,7 @@ section { scroll-margin-top: 30px; }
 }
 
 /* --- Hero Section --- */
-.hero { padding: 60px 0; }
+.hero { padding: 60px 10px; }
 .hero-grid { display: grid; grid-template-columns: 1fr 500px; gap: 28px; align-items: start; }
 
 .hero-card {
