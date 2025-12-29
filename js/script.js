@@ -1,101 +1,154 @@
-// 1. 연도 자동 업데이트
-const yearSpan = document.getElementById('year');
-if (yearSpan) {
-    yearSpan.innerText = new Date().getFullYear();
-}
+/**
+ * 1. 초기화 및 전역 변수 설정
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    // 요소 선택
+    const modal = document.getElementById('modalContainer');
+    const iframe = document.getElementById('contentFrame');
+    const closeBtn = document.getElementById('closeModal');
+    const popupLinks = document.querySelectorAll('.popup-trigger');
+    
+    // [PDF.js 설정] 
+    // 본인 서버(Github)에 폴더를 올렸다면 'lib/pdfjs/web/viewer.html' 사용
+    // 아직 올리기 전이라면 아래의 공식 CDN 주소를 사용해서 테스트하세요.
+    const PDFJS_VIEWER = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=';
 
-// 2. 모바일 메뉴 기능 (수정됨)
-const hamburger = document.getElementById('hamburger');
-const navLinks = document.getElementById('navLinks');
-// nav-links 안의 모든 a 태그(링크)를 가져옵니다.
-const links = document.querySelectorAll('.nav-links a');
+    /**
+     * 2. 연도 자동 업데이트
+     */
+    const yearSpan = document.getElementById('year');
+    if (yearSpan) {
+        yearSpan.innerText = new Date().getFullYear();
+    }
 
-// 햄버거 버튼 클릭 시 메뉴 열기/닫기
-hamburger.addEventListener('click', () => {
-    navLinks.classList.toggle('active'); // 메뉴판 보이기/숨기기
-    hamburger.classList.toggle('active'); // 햄버거 버튼 X자로 변신
-});
+    /**
+     * 3. 모바일 메뉴 기능
+     */
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    const links = document.querySelectorAll('.nav-links a');
 
-// 메뉴 안에 있는 링크를 클릭했을 때 메뉴 닫기
-links.forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('active'); // 메뉴판 숨기기
-        hamburger.classList.remove('active'); // 햄버거 버튼 원래대로
-    });
-});
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
 
-// 3. 이메일 복사 기능
-const copyButton = document.getElementById('copy-button');
-const textToCopyElement = document.getElementById('text-to-copy');
-const message = document.getElementById('message');
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+    }
 
-if(copyButton && textToCopyElement) {
-    copyButton.addEventListener('click', async (event) => {
-        event.preventDefault(); 
-        
-        const emailText = textToCopyElement.innerText;
+    /**
+     * 4. 이메일 복사 기능
+     */
+    const copyButton = document.getElementById('copy-button');
+    const textToCopyElement = document.getElementById('text-to-copy');
+    const message = document.getElementById('message');
 
-        try {
-            await navigator.clipboard.writeText(emailText);
+    if (copyButton && textToCopyElement) {
+        copyButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const emailText = textToCopyElement.innerText;
+            try {
+                await navigator.clipboard.writeText(emailText);
+                message.style.display = 'block';
+                message.style.color = '#00ff88';
+                message.innerText = '✅ 이메일 주소가 복사되었습니다!';
+                setTimeout(() => {
+                    message.innerText = '';
+                    message.style.display = 'none';
+                }, 2000);
+            } catch (err) {
+                console.error('클립보드 복사 실패:', err);
+            }
+        });
+    }
+
+    /**
+     * 5. 스크롤 애니메이션 (Scroll Reveal)
+     */
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => observer.observe(card));
+
+    /**
+     * 6. 모달 제어 (유튜브 & PDF.js 통합)
+     */
+    popupLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
             
-            message.style.display = 'block'; // 메시지 보이게 설정
-            message.style.color = '#00ff88'; 
-            message.innerText = '✅ 이메일 주소가 복사되었습니다!';
-            
-            setTimeout(() => {
-                message.innerText = '';
-                message.style.display = 'none'; // 메시지 다시 숨김
-            }, 2000);
+            const originalUrl = link.getAttribute('href');
+            let finalUrl = '';
 
-        } catch (err) {
-            console.error('클립보드 복사 실패:', err);
-            message.style.display = 'block';
-            message.style.color = '#ff4444';
-            message.innerText = '❌ 복사에 실패했습니다.';
-        }
+            // 유튜브 감지
+            if (originalUrl.includes('youtu.be') || originalUrl.includes('youtube.com')) {
+                let videoId = originalUrl.includes('youtu.be') 
+                    ? originalUrl.split('/').pop() 
+                    : new URLSearchParams(new URL(originalUrl).search).get('v');
+                finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            } 
+            // PDF 감지 (PDF.js 적용)
+            else if (originalUrl.toLowerCase().endsWith('.pdf')) {
+                // 전체 경로를 encodeURIComponent로 감싸서 전달
+                // #zoom=page-width 옵션으로 콘텐츠 가로폭을 맞춤
+                const fullPdfUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/') + originalUrl;
+                finalUrl = `${PDFJS_VIEWER}${encodeURIComponent(originalUrl)}#zoom=page-width`;
+            } 
+            else {
+                finalUrl = originalUrl;
+            }
+
+            // iframe에 주소 할당 및 모달 표시
+            iframe.src = finalUrl;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
     });
-}
 
-/* ... 기존 코드들 아래에 추가 ... */
+    // 닫기 함수
+    const closeModal = () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+            iframe.src = '';
+        }, 400);
+    };
 
-// 4. 스크롤 애니메이션 (Scroll Reveal)
-const observerOptions = {
-    root: null, // 뷰포트 기준
-    rootMargin: '0px',
-    threshold: 0.1 // 요소가 10% 정도 보이면 애니메이션 실행
-};
-
-const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-        // 요소가 화면에 들어오면
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible'); // 클래스 추가 (CSS 애니메이션 발동)
-            observer.unobserve(entry.target); // 한 번 실행 후 감시 종료 (성능 최적화)
-        }
-    });
-}, observerOptions);
-
-// 감시할 대상 선택 (.project-card 모두)
-const projectCards = document.querySelectorAll('.project-card');
-projectCards.forEach(card => {
-    observer.observe(card);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
 });
 
-// 5. 스크롤 스파이 (수정됨: Home 인식 개선)
+/**
+ * 7. 스크롤 스파이 (Scroll Spy) - DOMContentLoaded 밖에서 실행 가능
+ */
 const sections = document.querySelectorAll('section');
 const navItems = document.querySelectorAll('.nav-links a');
 
 function changeNav() {
     let current = '';
-
-    // [핵심 해결책] 스크롤이 최상단 근처(100px 이내)라면 무조건 'home'으로 설정
     if (window.scrollY < 100) {
         current = 'home';
     } else {
-        // 그 외의 경우에는 각 섹션의 위치를 계산
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
-            // 네비게이션 바 높이 등을 고려해 여유값(-150px)을 넉넉히 줍니다.
             if (window.scrollY >= (sectionTop - 150)) {
                 current = section.getAttribute('id');
             }
@@ -104,75 +157,15 @@ function changeNav() {
 
     navItems.forEach(a => {
         a.classList.remove('active');
-        // href 속성에 current ID가 포함되어 있는지 확인
-        if (current && a.getAttribute('href').includes(current)) {
+        const href = a.getAttribute('href');
+        if (current && href && href.includes(current)) {
             a.classList.add('active');
         }
     });
 }
 
-// 스크롤 할 때마다 실행
 window.addEventListener('scroll', changeNav);
-
-// [추가] 페이지가 로딩되자마자 한 번 실행 (처음부터 색이 들어오게 하기 위함)
 window.addEventListener('load', changeNav);
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. 요소 선택
-    const modal = document.getElementById('modalContainer');
-    const iframe = document.getElementById('contentFrame');
-    const closeBtn = document.getElementById('closeModal');
-    
-    // 팝업으로 띄우고 싶은 링크들에 'popup-trigger'라는 클래스를 추가해야 합니다.
-    // 아래 코드는 'popup-trigger' 클래스가 붙은 모든 a 태그를 찾습니다.
-    const popupLinks = document.querySelectorAll('.popup-trigger');
-
-    // 2. 링크 클릭 이벤트 처리 (유튜브 자동 감지 기능 추가)
-    popupLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        let originalUrl = link.getAttribute('href');
-        let finalUrl = '';
-
-        // 1. 아이폰(iOS) 여부 확인
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-        if (originalUrl.includes('youtu.be') || originalUrl.includes('youtube.com')) {
-            // 유튜브 로직 (동일)
-            // ...
-        } else if (isIOS && originalUrl.toLowerCase().endsWith('.pdf')) {
-            // 아이폰에서 PDF를 볼 때만 '느리지만 확실한' 구글 뷰어 사용
-            finalUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(originalUrl)}&embedded=true`;
-        } else {
-            // PC나 안드로이드는 '매우 빠른' 브라우저 기본 뷰어 사용
-            finalUrl = originalUrl;
-        }
-
-        iframe.src = finalUrl;
-        modal.classList.add('active');
-    });
-});
-
-    // 3. 닫기 기능 함수 (애니메이션 동기화 수정)
-    const closeModal = () => {
-        modal.classList.remove('active'); // 1. 먼저 투명하게 만듦 (CSS 애니메이션 시작)
-        document.body.style.overflow = ''; 
-
-        // 2. CSS 트랜지션 시간(0.4초)만큼 기다렸다가 iframe 내용 초기화
-        setTimeout(() => {
-            iframe.src = ''; 
-        }, 400); // CSS transition이 0.4s 이므로 400ms 대기
-    };
-    // 4. 닫기 버튼 클릭 시
-    closeBtn.addEventListener('click', closeModal);
-
-    // 5. 모달 바깥 영역(어두운 배경) 클릭 시 닫기
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-});
 
 
 const images = [
